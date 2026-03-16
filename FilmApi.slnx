@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="AppHost/AppHost.csproj" />
+  <Project Path="src/FilmApi/FilmApi.csproj" />
+  <Project Path="tests/FilmApi.Tests/FilmApi.Tests.csproj" />
+  <Project Path="SeedFilms/SeedFilms.csproj" />
+</Solution>

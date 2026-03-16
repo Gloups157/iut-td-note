@@ -1,0 +1,89 @@
+using FilmApi.Models;
+using Microsoft.Extensions.Configuration;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Conventions;
+using MongoDB.Driver;
+
+var basePath = AppContext.BaseDirectory;
+var config = new ConfigurationBuilder()
+    .SetBasePath(basePath)
+    .AddJsonFile("appsettings.json", optional: true)
+    .AddEnvironmentVariables()
+    .Build();
+
+static string? NonEmpty(string? s) => string.IsNullOrWhiteSpace(s) ? null : s;
+
+// Aspire injecte ConnectionStrings__filmapi et FILMAPI_DATABASENAME quand lancé depuis l'AppHost
+var conn = NonEmpty(Environment.GetEnvironmentVariable("ConnectionStrings__filmapi"))
+    ?? NonEmpty(Environment.GetEnvironmentVariable("ConnectionStrings__mongodb"))
+    ?? NonEmpty(config.GetConnectionString("filmapi"))
+    ?? NonEmpty(config.GetConnectionString("mongodb"))
+    ?? NonEmpty(config["MongoDb:ConnectionString"])
+    ?? throw new InvalidOperationException(
+        "Chaîne de connexion MongoDB manquante. Définir ConnectionStrings__filmapi (Aspire) ou MongoDb:ConnectionString.");
+
+var dbName = NonEmpty(Environment.GetEnvironmentVariable("FILMAPI_DATABASENAME"))
+    ?? config["MongoDb:DatabaseName"]
+    ?? "filmapi";
+
+var validCounts = new[] { 50_000, 500_000 };
+if (args.Length == 0 || !int.TryParse(args[0], out var total) || !validCounts.Contains(total))
+{
+    Console.WriteLine("Usage: dotnet run --project scripts/SeedFilms -- <count>");
+    Console.WriteLine("  count: 50000 | 500000");
+    return 1;
+}
+
+var pack = new ConventionPack { new CamelCaseElementNameConvention() };
+ConventionRegistry.Register("camelCase", pack, _ => true);
+
+var client = new MongoClient(conn);
+var database = client.GetDatabase(dbName);
+var collection = database.GetCollection<Film>("films");
+
+Console.WriteLine("Vidage de la collection films...");
+await collection.DeleteManyAsync(FilterDefinition<Film>.Empty);
+
+const int batchSize = 5000;
+var inserted = 0;
+var sw = System.Diagnostics.Stopwatch.StartNew();
+
+// Données seed allégées : un réalisateur, un genre par film (plan §1)
+var defaultDirector = new Director
+{
+    Id = ObjectId.GenerateNewId().ToString(),
+    Nom = "Default",
+    Prenom = "Director",
+    Nationalite = "FR",
+    DateNaissance = new DateTime(1970, 1, 1)
+};
+var defaultGenre = new Genre { Id = ObjectId.GenerateNewId().ToString(), Libelle = "Drama" };
+var defaultCountry = new Country { Code = "FR", Nom = "France" };
+
+for (var offset = 0; offset < total; offset += batchSize)
+{
+    var count = Math.Min(batchSize, total - offset);
+    var films = new List<Film>(count);
+    for (var i = 0; i < count; i++)
+    {
+        films.Add(new Film
+        {
+            Titre = $"Film-{offset + i + 1}",
+            Resume = $"Resume for film {offset + i + 1}.",
+            Annee = 2000 + (offset + i) % 25,
+            DureeMinutes = 90 + (offset + i) % 60,
+            DateSortie = new DateTime(2000, 1, 1).AddDays((offset + i) % 8000),
+            Realisateur = defaultDirector,
+            Genres = new List<Genre> { defaultGenre },
+            Acteurs = new List<Actor>(),
+            PaysProduction = defaultCountry
+        });
+    }
+    await collection.InsertManyAsync(films);
+    inserted += count;
+    Console.WriteLine($"  Inséré {inserted} / {total}");
+}
+
+sw.Stop();
+Console.WriteLine($"Terminé : {inserted} films en {sw.ElapsedMilliseconds} ms.");
+return 0;

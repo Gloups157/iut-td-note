@@ -1,0 +1,13 @@
+# Provision k6 dashboards (same as iut-performance-testing).
+apiVersion: 1
+providers:
+  - name: default
+    orgId: 1
+    folder: ''
+    folderUid: ''
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 30
+    options:
+      path: /etc/grafana/provisioning/dashboards
+      foldersFromFilesStructure: true
