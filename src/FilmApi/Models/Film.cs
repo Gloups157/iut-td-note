@@ -9,14 +9,14 @@ public class Film
     [BsonRepresentation(BsonType.ObjectId)]
     public string Id { get; set; } = string.Empty;
 
-    public string Titre { get; set; } = string.Empty;
-    public string Resume { get; set; } = string.Empty;
-    public int Annee { get; set; }
-    public int DureeMinutes { get; set; }
-    public DateTime? DateSortie { get; set; }
+    public string Title { get; set; } = string.Empty;
+    public string Summary { get; set; } = string.Empty;
+    public int Year { get; set; }
+    public int DurationMinutes { get; set; }
+    public DateTime? ReleaseDate { get; set; }
 
-    public Director Realisateur { get; set; } = null!;
+    public Director Director { get; set; } = null!;
     public List<Genre> Genres { get; set; } = new();
-    public List<Actor> Acteurs { get; set; } = new();
-    public Country? PaysProduction { get; set; }
+    public List<Actor> Actors { get; set; } = new();
+    public Country? ProductionCountry { get; set; }
 }

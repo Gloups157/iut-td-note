@@ -1,14 +1,17 @@
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using MongoDB.Driver;
 
 namespace FilmApi.Tests;
 
 /// <summary>
 /// Factory pour lancer l'API dans les tests en pointant MongoDB vers le conteneur Testcontainers.
+/// On remplace IMongoClient via ConfigureTestServices pour pointer vers le conteneur Testcontainers.
 /// </summary>
-public sealed class FilmApiAppFactory : WebApplicationFactory<Program>
+public class FilmApiAppFactory : WebApplicationFactory<Program>
 {
     private readonly MongoFixture _mongo;
 
@@ -19,13 +22,11 @@ public sealed class FilmApiAppFactory : WebApplicationFactory<Program>
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        builder.ConfigureAppConfiguration((_, config) =>
+        builder.ConfigureTestServices(services =>
         {
-            config.AddInMemoryCollection(new Dictionary<string, string?>
-            {
-                ["ConnectionStrings:mongodb"] = _mongo.GetConnectionString(),
-                ["MongoDb:DatabaseName"] = "filmapi"
-            });
+            var connectionString = _mongo.GetConnectionString();
+            services.RemoveAll<IMongoClient>();
+            services.AddSingleton<IMongoClient>(new MongoClient(connectionString));
         });
     }
 }

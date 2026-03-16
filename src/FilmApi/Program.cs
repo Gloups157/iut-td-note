@@ -6,16 +6,15 @@ using MongoDB.Driver;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Client MongoDB via Aspire (connection name = ressource base dans l'AppHost)
-builder.AddMongoDBClient(connectionName: "filmapi");
+var connectionString = builder.Configuration.GetConnectionString("mongodb") ?? throw new InvalidOperationException("Connection string missing. Set ConnectionStrings:mongodb.");
 
 var pack = new ConventionPack { new CamelCaseElementNameConvention() };
 ConventionRegistry.Register("camelCase", pack, _ => true);
 
-// Collection "films" à partir de la base injectée (FILMAPI_DATABASENAME quand lancé par Aspire)
-var dbName = builder.Configuration.GetValue<string>("FILMAPI_DATABASENAME")
-    ?? builder.Configuration["MongoDb:DatabaseName"]
-    ?? "filmapi";
+builder.Services.AddSingleton<IMongoClient>(new MongoClient(connectionString));
+
+var dbName = builder.Configuration.GetValue<string>("FILMAPI_DATABASENAME") ?? builder.Configuration["MongoDb:DatabaseName"];
+
 builder.Services.AddSingleton<IMongoCollection<Film>>(sp =>
 {
     var client = sp.GetRequiredService<IMongoClient>();
@@ -46,11 +45,12 @@ app.UseSwaggerUI(options =>
 app.MapGet("/films", async (
     IFilmService service,
     int page = 1,
-    int pageSize = 100) =>
+    int pageSize = 100,
+    int? releaseYear = null) =>
 {
     if (page < 1) page = 1;
     if (pageSize < 1) pageSize = 100;
-    var result = await service.GetPagedAsync(page, pageSize);
+    var result = await service.GetPagedAsync(page, pageSize, releaseYear);
     return Results.Ok(result);
 });
 
@@ -62,8 +62,8 @@ app.MapGet("/films/{id}", async (string id, IFilmService service) =>
 
 app.MapPost("/films", async (CreateFilmRequest request, IFilmService service) =>
 {
-    if (string.IsNullOrWhiteSpace(request.Titre))
-        return Results.BadRequest("Titre is required.");
+    if (string.IsNullOrWhiteSpace(request.Title))
+        return Results.BadRequest("Title is required.");
     var film = await service.CreateAsync(request);
     return Results.Created($"/films/{film.Id}", film);
 });

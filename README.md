@@ -81,9 +81,10 @@
 ### 4. Tests d’intégration MongoDB
 
 - **Objectif** : Les tests d’intégration font tourner l’API avec une base **MongoDB** (Testcontainers.MongoDb).
-- **À faire** : **MongoFixture** et **WebApplicationFactory** sont fournis. Écrire / compléter **au moins 2 tests** d’intégration (ex. `POST /films` →
-  201 + film retourné ; `GET /films/{id}` après un POST → 200 avec les bonnes données).
-- **Critères** : conteneur MongoDB partagé (IClassFixture), API lancée avec MongoDB en tests, au moins 2 tests passants (HTTP → Service → MongoDB).
+- **À faire** : **implémenter un test d'intégration** qui vérifie le **filtre par année de sortie** du `GET /films` : appeler `GET /films?releaseYear=XXXX`
+  après avoir inséré des films d'années différentes, et s'assurer que seuls les films de l'année demandée sont retournés (et que le total correspond).
+- **Critères** : conteneur MongoDB partagé (IClassFixture), API lancée avec MongoDB en tests, au moins 2 tests passants (HTTP → Service → MongoDB), plus un
+  test d'intégration pour le filtre par année de sortie sur `GET /films`.
 
 ### 5. Tests de performance
 

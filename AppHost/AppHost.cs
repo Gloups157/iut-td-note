@@ -7,9 +7,9 @@ var mongo = builder.AddMongoDB("mongo", userName: mongoUser, password: mongoPass
     .WithDataVolume()
     .WithLifetime(ContainerLifetime.Persistent);
 
-var mongodb = mongo.AddDatabase("filmapi");
+var mongodb = mongo.AddDatabase("mongodb");
 
-builder.AddProject<Projects.FilmApi>("filmApp")
+builder.AddProject<Projects.FilmApi>("filmApi")
     .WaitFor(mongodb)
     .WithReference(mongodb)
     .WithUrl("/swagger");
@@ -36,7 +36,7 @@ var influx = builder.AddContainer("influxdb", "influxdb", "2.7-alpine")
     .WithEnvironment("DOCKER_INFLUXDB_INIT_ADMIN_TOKEN", "k6-influxdb-token")
     .WithEnvironment("DOCKER_INFLUXDB_INIT_RETENTION", "7d");
 
-builder.AddContainer("grafana", "grafana/grafana", "11.3.0")
+builder.AddContainer("grafana", "grafana/grafana", "12.4.1")
     .WithHttpEndpoint(3000, 3000)
     .WithEnvironment("GF_AUTH_ANONYMOUS_ENABLED", "true")
     .WithEnvironment("GF_AUTH_ANONYMOUS_ORG_ROLE", "Admin")

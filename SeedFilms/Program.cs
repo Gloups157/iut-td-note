@@ -52,13 +52,13 @@ var sw = System.Diagnostics.Stopwatch.StartNew();
 var defaultDirector = new Director
 {
     Id = ObjectId.GenerateNewId().ToString(),
-    Nom = "Default",
-    Prenom = "Director",
-    Nationalite = "FR",
-    DateNaissance = new DateTime(1970, 1, 1)
+    LastName = "Default",
+    FirstName = "Director",
+    Nationality = "FR",
+    BirthDate = new DateTime(1970, 1, 1)
 };
-var defaultGenre = new Genre { Id = ObjectId.GenerateNewId().ToString(), Libelle = "Drama" };
-var defaultCountry = new Country { Code = "FR", Nom = "France" };
+var defaultGenre = new Genre { Id = ObjectId.GenerateNewId().ToString(), Name = "Drama" };
+var defaultCountry = new Country { Code = "FR", Name = "France" };
 
 for (var offset = 0; offset < total; offset += batchSize)
 {
@@ -66,17 +66,18 @@ for (var offset = 0; offset < total; offset += batchSize)
     var films = new List<Film>(count);
     for (var i = 0; i < count; i++)
     {
+        var year = 2000 + (offset + i) % 25;
         films.Add(new Film
         {
-            Titre = $"Film-{offset + i + 1}",
-            Resume = $"Resume for film {offset + i + 1}.",
-            Annee = 2000 + (offset + i) % 25,
-            DureeMinutes = 90 + (offset + i) % 60,
-            DateSortie = new DateTime(2000, 1, 1).AddDays((offset + i) % 8000),
-            Realisateur = defaultDirector,
+            Title = $"Film-{offset + i + 1}",
+            Summary = $"Resume for film {offset + i + 1}.",
+            Year = year,
+            DurationMinutes = 90 + (offset + i) % 60,
+            ReleaseDate = new DateTime(year, 1, 1).AddDays((offset + i) % 8000),
+            Director = defaultDirector,
             Genres = new List<Genre> { defaultGenre },
-            Acteurs = new List<Actor>(),
-            PaysProduction = defaultCountry
+            Actors = new List<Actor>(),
+            ProductionCountry = defaultCountry
         });
     }
     await collection.InsertManyAsync(films);

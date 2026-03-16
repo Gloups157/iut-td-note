@@ -1,13 +1,13 @@
 namespace FilmApi.Models;
 
 public record CreateFilmRequest(
-    string Titre,
-    string Resume,
-    int Annee,
-    int DureeMinutes,
-    DateTime? DateSortie,
-    Director Realisateur,
+    string Title,
+    string Summary,
+    int Year,
+    int DurationMinutes,
+    DateTime? ReleaseDate,
+    Director Director,
     List<Genre> Genres,
-    List<Actor> Acteurs,
-    Country? PaysProduction
+    List<Actor> Actors,
+    Country? ProductionCountry
 );

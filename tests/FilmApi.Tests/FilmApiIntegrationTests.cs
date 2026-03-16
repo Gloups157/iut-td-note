@@ -45,17 +45,17 @@ public sealed class FilmApiIntegrationTests : IClassFixture<MongoFixture>, IAsyn
     public async Task POST_films_Returns_201_And_Film()
     {
         // Arrange
-        var director = new Director { Id = "d1", Nom = "Dupont", Prenom = "Jean", Nationalite = "FR" };
+        var director = new Director { Id = "d1", LastName = "Dupont", FirstName = "Jean", Nationality = "FR" };
         var request = new CreateFilmRequest(
-            Titre: "Mon Film",
-            Resume: "Résumé.",
-            Annee: 2024,
-            DureeMinutes: 90,
-            DateSortie: null,
-            Realisateur: director,
-            Genres: new List<Genre> { new() { Id = "g1", Libelle = "Drame" } },
-            Acteurs: new List<Actor>(),
-            PaysProduction: new Country { Code = "FR", Nom = "France" }
+            Title: "Mon Film",
+            Summary: "Résumé.",
+            Year: 2024,
+            DurationMinutes: 90,
+            ReleaseDate: null,
+            Director: director,
+            Genres: new List<Genre> { new() { Id = "g1", Name = "Drame" } },
+            Actors: new List<Actor>(),
+            ProductionCountry: new Country { Code = "FR", Name = "France" }
         );
 
         // Act
@@ -66,15 +66,15 @@ public sealed class FilmApiIntegrationTests : IClassFixture<MongoFixture>, IAsyn
         var film = await response.Content.ReadFromJsonAsync<Film>(JsonOptions);
         Assert.NotNull(film);
         Assert.False(string.IsNullOrEmpty(film.Id));
-        Assert.Equal("Mon Film", film.Titre);
-        Assert.Equal(2024, film.Annee);
+        Assert.Equal("Mon Film", film.Title);
+        Assert.Equal(2024, film.Year);
     }
 
     [Fact]
     public async Task GET_films_id_Returns_200_After_Post()
     {
         // Arrange
-        var director = new Director { Id = "d2", Nom = "Martin", Prenom = "Marie", Nationalite = "FR" };
+        var director = new Director { Id = "d2", LastName = "Martin", FirstName = "Marie", Nationality = "FR" };
         var request = new CreateFilmRequest(
             "Film pour GET",
             "Résumé GET",
@@ -82,7 +82,7 @@ public sealed class FilmApiIntegrationTests : IClassFixture<MongoFixture>, IAsyn
             100,
             null,
             director,
-            new List<Genre> { new() { Id = "g2", Libelle = "Comédie" } },
+            new List<Genre> { new() { Id = "g2", Name = "Comédie" } },
             new List<Actor>(),
             null
         );
@@ -99,7 +99,7 @@ public sealed class FilmApiIntegrationTests : IClassFixture<MongoFixture>, IAsyn
         var film = await response.Content.ReadFromJsonAsync<Film>(JsonOptions);
         Assert.NotNull(film);
         Assert.Equal(created.Id, film.Id);
-        Assert.Equal("Film pour GET", film.Titre);
-        Assert.Equal("Martin", film.Realisateur.Nom);
+        Assert.Equal("Film pour GET", film.Title);
+        Assert.Equal("Martin", film.Director.LastName);
     }
 }

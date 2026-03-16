@@ -17,20 +17,20 @@ public class FilmServiceUnitTests
     public async Task CreateAsync_Calls_Repository_AddAsync_And_Returns_Film()
     {
         var substituteRepo = Substitute.For<IFilmRepository>();
-        var director = new Director { Id = "d1", Nom = "Villeneuve", Prenom = "Denis", Nationalite = "CA", DateNaissance = new DateTime(1967, 10, 3) };
-        var genre = new Genre { Id = "g1", Libelle = "Science-Fiction" };
+        var director = new Director { Id = "d1", LastName = "Villeneuve", FirstName = "Denis", Nationality = "CA", BirthDate = new DateTime(1967, 10, 3) };
+        var genre = new Genre { Id = "g1", Name = "Science-Fiction" };
         var expectedFilm = new Film
         {
             Id = "film1",
-            Titre = "Dune",
-            Resume = "Un jeune duc...",
-            Annee = 2021,
-            DureeMinutes = 155,
-            DateSortie = new DateTime(2021, 9, 15),
-            Realisateur = director,
+            Title = "Dune",
+            Summary = "Un jeune duc...",
+            Year = 2021,
+            DurationMinutes = 155,
+            ReleaseDate = new DateTime(2021, 9, 15),
+            Director = director,
             Genres = new List<Genre> { genre },
-            Acteurs = new List<Actor>(),
-            PaysProduction = new Country { Code = "US", Nom = "États-Unis" }
+            Actors = new List<Actor>(),
+            ProductionCountry = new Country { Code = "US", Name = "États-Unis" }
         };
         substituteRepo
             .AddAsync(Arg.Any<Film>())
@@ -39,39 +39,39 @@ public class FilmServiceUnitTests
         var service = new FilmService(substituteRepo);
 
         var request = new CreateFilmRequest(
-            Titre: "Dune",
-            Resume: "Un jeune duc...",
-            Annee: 2021,
-            DureeMinutes: 155,
-            DateSortie: new DateTime(2021, 9, 15),
-            Realisateur: director,
+            Title: "Dune",
+            Summary: "Un jeune duc...",
+            Year: 2021,
+            DurationMinutes: 155,
+            ReleaseDate: new DateTime(2021, 9, 15),
+            Director: director,
             Genres: new List<Genre> { genre },
-            Acteurs: new List<Actor>(),
-            PaysProduction: new Country { Code = "US", Nom = "États-Unis" }
+            Actors: new List<Actor>(),
+            ProductionCountry: new Country { Code = "US", Name = "États-Unis" }
         );
         var result = await service.CreateAsync(request);
 
         Assert.Equal("film1", result.Id);
-        Assert.Equal("Dune", result.Titre);
-        Assert.Equal(2021, result.Annee);
+        Assert.Equal("Dune", result.Title);
+        Assert.Equal(2021, result.Year);
         await substituteRepo
             .Received(1)
-            .AddAsync(Arg.Is<Film>(f => f.Titre == "Dune"));
+            .AddAsync(Arg.Is<Film>(f => f.Title == "Dune"));
     }
 
     [Fact]
     public async Task GetByIdAsync_Returns_Film_When_Exists()
     {
         var substituteRepo = Substitute.For<IFilmRepository>();
-        var director = new Director { Id = "d2", Nom = "Nolan", Prenom = "Christopher", Nationalite = "GB" };
-        var film = new Film { Id = "f2", Titre = "Inception", Annee = 2010, Realisateur = director, Genres = new List<Genre>(), Acteurs = new List<Actor>() };
+        var director = new Director { Id = "d2", LastName = "Nolan", FirstName = "Christopher", Nationality = "GB" };
+        var film = new Film { Id = "f2", Title = "Inception", Year = 2010, Director = director, Genres = new List<Genre>(), Actors = new List<Actor>() };
         substituteRepo.GetByIdAsync("f2").Returns(film);
 
         var service = new FilmService(substituteRepo);
         var result = await service.GetByIdAsync("f2");
 
         Assert.NotNull(result);
-        Assert.Equal("Inception", result.Titre);
-        Assert.Equal("Nolan", result.Realisateur.Nom);
+        Assert.Equal("Inception", result.Title);
+        Assert.Equal("Nolan", result.Director.LastName);
     }
 }

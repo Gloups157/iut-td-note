@@ -21,33 +21,33 @@ public class FilmDetailSnapshotTests
         var director = new Director
         {
             Id = "dir-1",
-            Nom = "Villeneuve",
-            Prenom = "Denis",
-            Nationalite = "CA",
-            DateNaissance = new DateTime(1967, 10, 3)
+            LastName = "Villeneuve",
+            FirstName = "Denis",
+            Nationality = "CA",
+            BirthDate = new DateTime(1967, 10, 3)
         };
         var actors = new List<Actor>
         {
-            new() { Id = "a1", Nom = "Chalamet", Prenom = "Timothée", Role = "Paul Atréides" },
-            new() { Id = "a2", Nom = "Zendaya", Prenom = "", Role = "Chani" }
+            new() { Id = "a1", LastName = "Chalamet", FirstName = "Timothée", Role = "Paul Atréides" },
+            new() { Id = "a2", LastName = "Zendaya", FirstName = "", Role = "Chani" }
         };
         var genres = new List<Genre>
         {
-            new() { Id = "g1", Libelle = "Science-Fiction" },
-            new() { Id = "g2", Libelle = "Aventure" }
+            new() { Id = "g1", Name = "Science-Fiction" },
+            new() { Id = "g2", Name = "Aventure" }
         };
         var film = new Film
         {
             Id = "film-abc-123",
-            Titre = "Dune",
-            Resume = "Sur la planète Arrakis...",
-            Annee = 2021,
-            DureeMinutes = 155,
-            DateSortie = new DateTime(2021, 9, 15),
-            Realisateur = director,
-            Acteurs = actors,
+            Title = "Dune",
+            Summary = "Sur la planète Arrakis...",
+            Year = 2021,
+            DurationMinutes = 155,
+            ReleaseDate = new DateTime(2021, 9, 15),
+            Director = director,
+            Actors = actors,
             Genres = genres,
-            PaysProduction = new Country { Code = "US", Nom = "États-Unis" }
+            ProductionCountry = new Country { Code = "US", Name = "États-Unis" }
         };
         substituteRepo.GetByIdAsync("film-abc-123").Returns(film);
 
@@ -56,23 +56,23 @@ public class FilmDetailSnapshotTests
 
         Assert.NotNull(result);
         Assert.Equal("film-abc-123", result!.Id);
-        Assert.Equal("Dune", result.Titre);
-        Assert.Equal("Sur la planète Arrakis...", result.Resume);
-        Assert.Equal(2021, result.Annee);
-        Assert.Equal(155, result.DureeMinutes);
-        Assert.Equal(new DateTime(2021, 9, 15), result.DateSortie);
-        Assert.NotNull(result.Realisateur);
-        Assert.Equal("dir-1", result.Realisateur.Id);
-        Assert.Equal("Villeneuve", result.Realisateur.Nom);
-        Assert.Equal("Denis", result.Realisateur.Prenom);
-        Assert.Equal("CA", result.Realisateur.Nationalite);
-        Assert.Equal(2, result.Acteurs.Count);
-        Assert.Equal("Chalamet", result.Acteurs[0].Nom);
-        Assert.Equal("Paul Atréides", result.Acteurs[0].Role);
+        Assert.Equal("Dune", result.Title);
+        Assert.Equal("Sur la planète Arrakis...", result.Summary);
+        Assert.Equal(2021, result.Year);
+        Assert.Equal(155, result.DurationMinutes);
+        Assert.Equal(new DateTime(2021, 9, 15), result.ReleaseDate);
+        Assert.NotNull(result.Director);
+        Assert.Equal("dir-1", result.Director.Id);
+        Assert.Equal("Villeneuve", result.Director.LastName);
+        Assert.Equal("Denis", result.Director.FirstName);
+        Assert.Equal("CA", result.Director.Nationality);
+        Assert.Equal(2, result.Actors.Count);
+        Assert.Equal("Chalamet", result.Actors[0].LastName);
+        Assert.Equal("Paul Atréides", result.Actors[0].Role);
         Assert.Equal(2, result.Genres.Count);
-        Assert.Equal("Science-Fiction", result.Genres[0].Libelle);
-        Assert.NotNull(result.PaysProduction);
-        Assert.Equal("US", result.PaysProduction.Code);
-        Assert.Equal("États-Unis", result.PaysProduction.Nom);
+        Assert.Equal("Science-Fiction", result.Genres[0].Name);
+        Assert.NotNull(result.ProductionCountry);
+        Assert.Equal("US", result.ProductionCountry.Code);
+        Assert.Equal("États-Unis", result.ProductionCountry.Name);
     }
 }
