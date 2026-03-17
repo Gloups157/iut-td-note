@@ -40,4 +40,10 @@ public class FilmRepository : IFilmRepository
             .ToListAsync();
         return (items, (int)totalCount);
     }
+
+    public async Task<bool> DeleteByIdAsync(string id)
+    {
+        var result = await _collection.DeleteOneAsync(f => f.Id == id);
+        return result.DeletedCount > 0;
+    }
 }

@@ -30,7 +30,7 @@ builder.Services.AddSwaggerGen(options =>
     {
         Title = "Film API",
         Version = "v1",
-        Description = "API du TD noté — Films (GET/POST /films), modèle imbriqué, MongoDB."
+        Description = "API du TD noté — Films (GET/POST/DELETE /films), modèle imbriqué, MongoDB."
     });
 });
 
@@ -66,6 +66,12 @@ app.MapPost("/films", async (CreateFilmRequest request, IFilmService service) =>
         return Results.BadRequest("Title is required.");
     var film = await service.CreateAsync(request);
     return Results.Created($"/films/{film.Id}", film);
+});
+
+app.MapDelete("/films/{id}", async (string id, IFilmService service) =>
+{
+    var deleted = await service.DeleteAsync(id);
+    return deleted ? Results.NoContent() : Results.NotFound();
 });
 
 app.Run();

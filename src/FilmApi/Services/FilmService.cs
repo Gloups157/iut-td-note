@@ -37,4 +37,6 @@ public class FilmService : IFilmService
         var (items, totalCount) = await _repository.GetPagedAsync(skip, pageSize, releaseYear);
         return new PagedResult<Film>(totalCount, page, pageSize, items);
     }
+
+    public Task<bool> DeleteAsync(string id) => _repository.DeleteByIdAsync(id);
 }

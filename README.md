@@ -16,7 +16,7 @@
 ├── README.md
 ├── AppHost/                    # Aspire : MongoDB, FilmApi, seeds (50k, 500k), InfluxDB, Grafana
 ├── src/
-│   └── FilmApi/                # API (GET/POST /films), modèle Film imbriqué, MongoDB
+│   └── FilmApi/                # API (GET/POST/DELETE /films), modèle Film imbriqué, MongoDB
 │       ├── Models/             # Film, Director, Actor, Genre, Country, CreateFilmRequest, PagedResult
 │       ├── Repositories/       # IFilmRepository, FilmRepository
 │       └── Services/           # IFilmService, FilmService
@@ -52,7 +52,7 @@
 4. **Tests d’intégration** : Le projet utlise Mongo comme base de données ; écriture de **2 tests** d'intégrations :
     1. tester le **filtre par année de sortie** de `GET /films` : appeler `GET /films?releaseYear=XXXX` après avoir inséré des films d'années différentes, et
        s'assurer que seuls les films de l'année demandée sont retournés (et que le total correspond).
-    2. TODO
+    2. tester la suppression d'un film `DELETE /films/{id}` en vérifiant que le film n'existe plus via un `GET /films`.
 5. **Tests de performance** : lancer la stack via **Aspire**, puis une batterie de **test de perf** (exécution des tests via Task, voir ci-dessous), load et
    spike, chacun avec 50k et 500k en bdd ; consulter les métriques dans **Grafana** ; compléter par votre observation les fichiers `*.md` du dossier `/reports`.
 

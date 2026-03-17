@@ -72,4 +72,29 @@ public class FilmServiceUnitTests
         Assert.Equal("Inception", result.Title);
         Assert.Equal("Nolan", result.Director.LastName);
     }
+
+    [Fact]
+    public async Task DeleteAsync_Returns_True_When_Repository_Deletes()
+    {
+        var substituteRepo = Substitute.For<IFilmRepository>();
+        substituteRepo.DeleteByIdAsync("f1").Returns(true);
+        var service = new FilmService(substituteRepo);
+
+        var result = await service.DeleteAsync("f1");
+
+        Assert.True(result);
+        await substituteRepo.Received(1).DeleteByIdAsync("f1");
+    }
+
+    [Fact]
+    public async Task DeleteAsync_Returns_False_When_Not_Found()
+    {
+        var substituteRepo = Substitute.For<IFilmRepository>();
+        substituteRepo.DeleteByIdAsync("missing").Returns(false);
+        var service = new FilmService(substituteRepo);
+
+        var result = await service.DeleteAsync("missing");
+
+        Assert.False(result);
+    }
 }
