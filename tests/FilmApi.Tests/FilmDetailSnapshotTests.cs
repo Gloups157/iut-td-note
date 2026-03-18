@@ -16,7 +16,7 @@ public class FilmDetailSnapshotTests
     public async Task GetById_Returns_Complex_Film_Structure()
     {
         var substituteRepo = Substitute.For<IFilmRepository>();
-        var director = new Director
+        var director = new DirectorBuilder
         {
             Id = "dir-1",
             LastName = "Villeneuve",
@@ -24,17 +24,17 @@ public class FilmDetailSnapshotTests
             Nationality = "CA",
             BirthDate = new DateTime(1967, 10, 3)
         };
-        var actors = new List<Actor>
+        var actors = new List<ActorBuilder>
         {
             new() { Id = "a1", LastName = "Chalamet", FirstName = "Timothée", Role = "Paul Atréides" },
             new() { Id = "a2", LastName = "Zendaya", FirstName = "", Role = "Chani" }
         };
-        var genres = new List<Genre>
+        var genres = new List<GenreBuilder>
         {
             new() { Id = "g1", Name = "Science-Fiction" },
             new() { Id = "g2", Name = "Aventure" }
         };
-        var film = new Film
+        var film = new FilmBuilder
         {
             Id = "film-abc-123",
             Title = "Dune",
@@ -42,10 +42,10 @@ public class FilmDetailSnapshotTests
             Year = 2021,
             DurationMinutes = 155,
             ReleaseDate = new DateTime(2021, 9, 15),
-            Director = director,
+            DirectorBuilder = director,
             Actors = actors,
             Genres = genres,
-            ProductionCountry = new Country { Code = "US", Name = "États-Unis" }
+            ProductionCountry = new CountryBuilder { Code = "US", Name = "États-Unis" }
         };
         substituteRepo.GetByIdAsync("film-abc-123").Returns(film);
 

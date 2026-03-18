@@ -22,13 +22,13 @@ public sealed class MongoFixture : IAsyncLifetime, IDisposable
 
     public string GetConnectionString() => _container.GetConnectionString();
 
-    public IMongoCollection<Film> GetCollection(string databaseName = "filmapi")
+    public IMongoCollection<FilmBuilder> GetCollection(string databaseName = "filmapi")
     {
         var pack = new ConventionPack { new CamelCaseElementNameConvention() };
         ConventionRegistry.Register("camelCase", pack, _ => true);
         var client = new MongoClient(_container.GetConnectionString());
         var database = client.GetDatabase(databaseName);
-        return database.GetCollection<Film>("films");
+        return database.GetCollection<FilmBuilder>("films");
     }
 
     /// <summary>
@@ -37,6 +37,6 @@ public sealed class MongoFixture : IAsyncLifetime, IDisposable
     public async Task ClearFilmsAsync()
     {
         var collection = GetCollection();
-        await collection.DeleteManyAsync(FilterDefinition<Film>.Empty);
+        await collection.DeleteManyAsync(FilterDefinition<FilmBuilder>.Empty);
     }
 }
