@@ -113,4 +113,16 @@ public class FilmBuilder
             ProductionCountry = country
         };
     }
+    public CreateFilmRequest ToCreateRequest() => new(
+        Title: _title,
+        Summary: _summary,
+        Year: _year,
+        DurationMinutes: _durationMinutes,
+        ReleaseDate: _releaseDate,
+        Director: _directorBuilder.Build(),
+        Genres: _genreBuilders.Select(gb => gb.Build()).ToList(),
+        Actors: _actorBuilders.Select(ab => ab.Build()).ToList(),
+        ProductionCountry: _countryBuilder?.Build()
+);
+
 }
