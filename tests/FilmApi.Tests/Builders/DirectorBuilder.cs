@@ -1,4 +1,6 @@
-namespace FilmApi.Models;
+using FilmApi.Models;
+
+namespace FilmApi.Tests.Builders;
 
 public class DirectorBuilder
 {
