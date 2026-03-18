@@ -1,4 +1,5 @@
 using FilmApi.Models;
+using FilmApi.Tests.Builders;
 using MongoDB.Bson.Serialization.Conventions;
 using MongoDB.Driver;
 using Testcontainers.MongoDb;
